@@ -5,3 +5,4 @@ TILE_WIDTH = 32
 TILE_HEIGHT = 32
 SIZE_X = 10
 SIZE_Y = 20
+TILES_PATH = "Sprites/tiles.png"

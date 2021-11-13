@@ -1,12 +1,14 @@
 import pygame
 from settings import *
 import board_manager
+import display_manager
 
 
 class Main:
     def __init__(self):
         self.init_pygame()
         self.init_board()
+        self.init_display()
         self.main_loop()
 
     def init_pygame(self):
@@ -15,6 +17,9 @@ class Main:
 
     def init_board(self):
         self.bm = board_manager.BoardManager()
+
+    def init_display(self):
+        self.dm = display_manager.DisplayManager(self.win, self.bm)
 
     def main_loop(self):
         clock = pygame.time.Clock()
