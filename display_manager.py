@@ -12,7 +12,7 @@ class DisplayManager:
     def load_sprites(self):
         sprite_sheet = pygame.image.load(TILES_PATH)
         self.tiles = []
-        for i in range(7):
+        for i in range(15):
             self.tiles.append(self.get_sprite(sprite_sheet, i))
 
     def get_sprite(self, sheet, index):
@@ -28,6 +28,7 @@ class DisplayManager:
 
     def draw_board(self):
         self.draw_tiles()
+        self.draw_block()
         pygame.display.flip()
 
     def draw_tiles(self):
@@ -40,3 +41,10 @@ class DisplayManager:
             self.win.blit(self.tiles[0], pos)
         else:
             self.win.blit(self.get_tile(col-1, 0), pos)
+    
+    def draw_block(self):
+        for i in range(4):
+            for j in range(4):
+                if self.bm.blocks[self.bm.block_kind][0][j][i] == '1':
+                    self.draw_tile(((self.bm.block_pos[0] + i) * TILE_WIDTH, (self.bm.block_pos[1] + j) * TILE_WIDTH), self.bm.block_kind)
+        
