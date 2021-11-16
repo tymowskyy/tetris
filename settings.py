@@ -7,4 +7,4 @@ SIZE_X = 10
 SIZE_Y = 20
 TILES_PATH = "Sprites/tiles.png"
 BLOCKS_PATH = "blocks.csv"
-STARTING_POS = 3, 0
+STARTING_POS = 3, 19

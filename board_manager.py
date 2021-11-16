@@ -38,8 +38,7 @@ class BoardManager:
                 self.blocks.append([])
             if i % 4 == 0:
                 self.blocks[-1].append([])
-            self.blocks[-1][-1].append(blocks_file[i])
-        print(self.blocks)
+            self.blocks[-1][-1].append(list(map(lambda x: x == '1', blocks_file[i])))
 
     def generate_queue(self):
         self.queue = [i for i in range(7)]
