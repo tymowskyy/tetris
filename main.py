@@ -6,20 +6,12 @@ import display_manager
 
 class Main:
     def __init__(self):
-        self.init_pygame()
-        self.init_board()
-        self.init_display()
-        self.main_loop()
-
-    def init_pygame(self):
         pygame.init()
         self.win = pygame.display.set_mode((WIDTH, HEIGHT))
-
-    def init_board(self):
         self.bm = board_manager.BoardManager()
-
-    def init_display(self):
         self.dm = display_manager.DisplayManager(self.win, self.bm)
+        
+        self.main_loop()
 
     def main_loop(self):
         clock = pygame.time.Clock()
@@ -36,13 +28,17 @@ class Main:
                 # rotate
                 pass
             if key_input[pygame.K_LEFT]:
-                # move left
+                self.bm.move_block((-1, 0))
                 pass
             elif key_input[pygame.K_RIGHT]:
-                # move right
-                pass
+                self.bm.move_block((1, 0))
             if key_input[pygame.K_DOWN]:
-                pass
+                if not self.bm.move_block((0, -1)):
+                    self.bm.save_block()
+                    self.bm.remove_full_lines()
+                    self.bm.generate_block()
+            
+            self.dm.draw_board()
 
         pygame.quit()
 
