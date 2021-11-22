@@ -9,7 +9,7 @@ class BoardManager:
     def __init__(self):
         self.generate_board()
         self.load_blocks()
-        self.load_rotations()
+        self.load_offsets()
         self.generate_queue()
         self.generate_block()
 
@@ -42,14 +42,14 @@ class BoardManager:
                 self.blocks[-1].append([])
             self.blocks[-1][-1].append(list(map(lambda x: x == '1', blocks_file[i])))
 
-    def load_rotations(self):
-        self.rotations = [[],[]]
-        for (index, path) in zip([0, 1], [IROTATIONS_PATH, JLTSZROTATIONS_PATH]):
+    def load_offsets(self):
+        self.offsets = [[],[]]
+        for (index, path) in zip([0, 1], [IOFFSETS_PATH, JLTSZOFFSETS_PATH]):
             with open(path, 'r') as csv_file:
                 reader = csv.reader(csv_file)
                 for i in reader:
                     ii = list(map(int, i))
-                    self.rotations[index].append([(ii[0], ii[1]), (ii[2], ii[3]), (ii[4], ii[5])])
+                    self.offsets[index].append([(ii[0], ii[1]), (ii[2], ii[3]), (ii[4], ii[5]), (ii[6], ii[7])])
 
     def generate_queue(self):
         self.queue = [i for i in range(7)]
@@ -106,7 +106,7 @@ class BoardManager:
         elif self.block_kind == 0: # I
             is_i=True    
         for dir in [0, 1]:
-            for i in [(0, 0)] + self.rotations[not is_i][self.block_rot*2 + dir]:
+            for i in [(0, 0)] + self.offsets[not is_i][self.block_rot*2 + dir]:
                 new_pos = [self.block_pos[0] + i[0], self.block_pos[1] + i[1]]
                 new_rot = (self.block_rot-1)%4 if dir else (self.block_rot+1)%4
                 if self.is_possible(self.block_kind, new_pos, new_rot):
