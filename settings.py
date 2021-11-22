@@ -8,3 +8,5 @@ SIZE_Y = 20
 TILES_PATH = "Sprites/tiles.png"
 BLOCKS_PATH = "blocks.csv"
 STARTING_POS = 3, 19
+STEP_DELAY = .06
+FSTEP_DELAY = .4
