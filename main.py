@@ -24,6 +24,7 @@ class Main:
         self.t_touching = time()
         self.t_move = time()
         self.is_moving = False
+        self.dir = -1
 
         while is_running:
             self.t = time()
@@ -41,8 +42,9 @@ class Main:
         pygame.quit()
 
     def sideway(self, pos):
-        if not self.is_moving:
+        if not self.is_moving or self.dir!=pos:
             if self.bm.move_block((pos, 0)):
+                self.dir = pos
                 self.bm.update_projection()
                 self.is_moving = True
                 self.t_fstep = self.t
