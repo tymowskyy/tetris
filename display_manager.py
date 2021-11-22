@@ -27,23 +27,23 @@ class DisplayManager:
 
     def draw_board(self):
         self.draw_tiles()
-        self.draw_block()
+        self.draw_block(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_proj], 0, 1)
+        self.draw_block(self.bm.block_kind, self.bm.block_pos, 0, 0)
         pygame.display.flip()
 
     def draw_tiles(self):
         for i in range(SIZE_X):
             for j in range(SIZE_Y):
-                self.draw_tile((i*TILE_WIDTH, (SIZE_Y-j-1)*TILE_HEIGHT), self.bm.board[j][i])
+                self.draw_tile((i*TILE_WIDTH, (SIZE_Y-j-1)*TILE_HEIGHT), self.bm.board[j][i], 0)
     
-    def draw_tile(self, pos, col):
+    def draw_tile(self, pos, col, proj):
         if col==0:
             self.win.blit(self.tiles[0], pos)
         else:
-            self.win.blit(self.get_tile(col-1, 0), pos)
+            self.win.blit(self.get_tile(col-1, proj), pos)
     
-    def draw_block(self):
+    def draw_block(self, kind, pos, rot, proj):
         for i in range(4): # X
             for j in range(4): # Y
-                if self.bm.blocks[self.bm.block_kind][0][j][i]:
-                    self.draw_tile(((self.bm.block_pos[0] + i) * TILE_WIDTH, (SIZE_Y - self.bm.block_pos[1] + j - 1) * TILE_WIDTH), self.bm.block_kind+1)
-        
+                if self.bm.blocks[kind][rot][j][i]:
+                    self.draw_tile(((pos[0] + i) * TILE_WIDTH, (SIZE_Y - pos[1] + j - 1) * TILE_WIDTH), kind+1, proj)

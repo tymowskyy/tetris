@@ -50,6 +50,7 @@ class BoardManager:
         self.queue.pop(0)
         if len(self.queue) == 0:
             self.generate_queue()
+        self.update_projection()
 
     def is_possible(self, kind, pos, rot):
         for i in range(4): # X
@@ -76,3 +77,12 @@ class BoardManager:
                 if not self.blocks[self.block_kind][0][j][i]:
                     continue
                 self.board[self.block_pos[1] - j][self.block_pos[0] + i] = self.block_kind+1
+    
+    def update_projection(self):
+        for i in range(self.block_pos[1], -1, -1):
+            if not self.is_possible(self.block_kind, [self.block_pos[0], i], 0):
+                self.block_proj = i+1
+                return
+
+    def move_down(self):
+        self.block_pos = [self.block_pos[0], self.block_proj]
