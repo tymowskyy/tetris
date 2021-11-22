@@ -9,6 +9,7 @@ class BoardManager:
     def __init__(self):
         self.generate_board()
         self.load_blocks()
+        self.load_rotations()
         self.generate_queue()
         self.generate_block()
 
@@ -17,6 +18,7 @@ class BoardManager:
 
     def remove_full_lines(self):
         lines = self.get_full_lines()
+        lines.reverse()
         for i in lines:
             self.board.pop(i)
             self.board.insert(-1, [0 for i in range(SIZE_Y)])
@@ -40,6 +42,15 @@ class BoardManager:
                 self.blocks[-1].append([])
             self.blocks[-1][-1].append(list(map(lambda x: x == '1', blocks_file[i])))
 
+    def load_rotations(self):
+        self.rotations = [[],[]]
+        for (index, path) in zip([0, 1], [IROTATIONS_PATH, JLTSZROTATIONS_PATH]):
+            with open(path, 'r') as csv_file:
+                reader = csv.reader(csv_file)
+                for i in reader:
+                    ii = list(map(int, i))
+                    self.rotations[index].append([(ii[0], ii[1]), (ii[2], ii[3]), (ii[4], ii[5])])
+
     def generate_queue(self):
         self.queue = [i for i in range(7)]
         random.shuffle(self.queue)
@@ -47,6 +58,7 @@ class BoardManager:
     def generate_block(self):
         self.block_pos = STARTING_POS
         self.block_kind = self.queue[0]
+        self.block_rot = 0
         self.queue.pop(0)
         if len(self.queue) == 0:
             self.generate_queue()
@@ -66,7 +78,7 @@ class BoardManager:
 
     def move_block(self, pos):
         new_pos = (self.block_pos[0] + pos[0], self.block_pos[1] + pos[1])
-        if self.is_possible(self.block_kind, new_pos, 0):
+        if self.is_possible(self.block_kind, new_pos, self.block_rot):
             self.block_pos = new_pos
             return True
         return False
@@ -74,15 +86,32 @@ class BoardManager:
     def save_block(self):
         for i in range(4):
             for j in range(4):
-                if not self.blocks[self.block_kind][0][j][i]:
+                if not self.blocks[self.block_kind][self.block_rot][j][i]:
                     continue
                 self.board[self.block_pos[1] - j][self.block_pos[0] + i] = self.block_kind+1
     
     def update_projection(self):
         for i in range(self.block_pos[1], -1, -1):
-            if not self.is_possible(self.block_kind, [self.block_pos[0], i], 0):
+            if not self.is_possible(self.block_kind, [self.block_pos[0], i], self.block_rot):
                 self.block_proj = i+1
                 return
 
     def move_down(self):
         self.block_pos = [self.block_pos[0], self.block_proj]
+
+    def rotate(self):
+        is_i = False
+        if self.block_kind == 1: # O
+            return False
+        elif self.block_kind == 0: # I
+            is_i=True    
+        for dir in [0, 1]:
+            for i in [(0, 0)] + self.rotations[not is_i][self.block_rot*2 + dir]:
+                new_pos = [self.block_pos[0] + i[0], self.block_pos[1] + i[1]]
+                new_rot = (self.block_rot-1)%4 if dir else (self.block_rot+1)%4
+                if self.is_possible(self.block_kind, new_pos, new_rot):
+                    self.block_pos = new_pos
+                    self.block_rot = new_rot
+                    self.update_projection()
+                    return True
+        return False

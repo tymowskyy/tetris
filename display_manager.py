@@ -27,8 +27,8 @@ class DisplayManager:
 
     def draw_board(self):
         self.draw_tiles()
-        self.draw_block(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_proj], 0, 1)
-        self.draw_block(self.bm.block_kind, self.bm.block_pos, 0, 0)
+        self.draw_block(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_proj], self.bm.block_rot, 1)
+        self.draw_block(self.bm.block_kind, self.bm.block_pos, self.bm.block_rot, 0)
         pygame.display.flip()
 
     def draw_tiles(self):

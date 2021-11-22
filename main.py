@@ -23,6 +23,7 @@ class Main:
         self.t_down = time()
         self.t_touching = time()
         self.t_move = time()
+        self.up = False
         self.is_moving = False
         self.dir = -1
 
@@ -33,7 +34,7 @@ class Main:
                 if event.type == pygame.QUIT:
                     is_running = False
             self.keyboard(pygame.key.get_pressed())
-            self.is_touching = not self.bm.is_possible(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_pos[1]-1], 0)
+            self.is_touching = not self.bm.is_possible(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_pos[1]-1], self.bm.block_rot)
             if self.is_touching:
                 if self.t - self.t_touching >= TOUCHING_DELAY or self.t - self.t_move >= IMMOBILITY_DELAY:
                     self.place()
@@ -56,9 +57,12 @@ class Main:
                 self.t_move = self.t
 
     def keyboard(self, key_input):
-        if key_input[pygame.K_UP]:
-            # rotate
-            pass
+        if key_input[pygame.K_UP] and not self.up:
+            if self.bm.rotate():
+                self.up = True
+                self.t_move = self.t
+        if not key_input[pygame.K_UP] and self.up:
+            self.up = False
         if key_input[pygame.K_LEFT]:
             self.sideway(-1)
         elif key_input[pygame.K_RIGHT]:
