@@ -21,7 +21,7 @@ class BoardManager:
         lines.reverse()
         for i in lines:
             self.board.pop(i)
-            self.board.insert(-1, [0 for i in range(SIZE_Y)])
+            self.board.insert(SIZE_Y-1, [0 for i in range(SIZE_X)])
 
     def get_full_lines(self):
         to_remove = []
