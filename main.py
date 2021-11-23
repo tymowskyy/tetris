@@ -23,6 +23,7 @@ class Main:
         self.t_down = time()
         self.t_touching = time()
         self.t_move = time()
+        self.t_fall = time()
         self.up = False
         self.is_moving = False
         self.dir = -1
@@ -40,6 +41,10 @@ class Main:
                     self.place()
             else:
                 self.t_touching = self.t
+            
+            if self.t - self.t_fall >= FALL_DELAY:
+                self.move_down()
+
         pygame.quit()
 
     def sideway(self, pos):
@@ -72,9 +77,7 @@ class Main:
             self.is_moving = False
 
         if key_input[pygame.K_DOWN] and self.t - self.t_down >= STEP_DELAY:
-            self.t_down = self.t
-            if self.bm.move_block((0, -1)):
-                self.t_move = self.t
+            self.move_down()
 
         if key_input[pygame.K_SPACE] and not self.space:
             self.space = True
@@ -84,11 +87,18 @@ class Main:
             self.space = False
         self.dm.draw_board()
 
+    def move_down(self):
+        self.t_down = self.t
+        if self.bm.move_block((0, -1)):
+            self.t_move = self.t
+            self.t_fall = self.t
+
     def place(self):
         self.is_touching = False
         self.bm.save_block()
         self.bm.remove_full_lines()
         self.bm.generate_block()
+        self.t_fall = self.t
 
 if __name__ == '__main__':
     Main()
