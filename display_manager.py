@@ -31,12 +31,9 @@ class DisplayManager:
         self.draw_tiles()
         self.draw_block(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_proj], self.bm.block_rot, 1)
         self.draw_block(self.bm.block_kind, self.bm.block_pos, self.bm.block_rot, 0)
-        if self.bm.queue[0] == 0:
-            self.draw_block_direct(self.bm.queue[0], [SELF_NEXT_OFFSET[0], SELF_NEXT_OFFSET[1] - TILE_HEIGHT//2], 0)
-        elif self.bm.queue[0] == 1:
-            self.draw_block_direct(self.bm.queue[0], SELF_NEXT_OFFSET, 0)
-        else:
-            self.draw_block_direct(self.bm.queue[0], [SELF_NEXT_OFFSET[0] + TILE_WIDTH//2, SELF_NEXT_OFFSET[1]], 0)
+        self.draw_block_extra(self.bm.queue[0], SELF_NEXT_OFFSET, 0)
+        if self.bm.holded != 0:
+            self.draw_block_extra(self.bm.holded-1, SELF_HOLD_OFFSET, 0)
         pygame.display.flip()
 
     def draw_tiles(self):
@@ -56,8 +53,14 @@ class DisplayManager:
                 if self.bm.blocks[kind][rot][j][i]:
                     self.draw_tile(((pos[0] + i) * TILE_WIDTH + BOARD_OFFSET[0], (SIZE_Y - pos[1] + j - 1) * TILE_HEIGHT + BOARD_OFFSET[1]), kind+1, proj)
 
-    def draw_block_direct(self, kind, pos, rot):
+    def draw_block_extra(self, kind, pos, rot):
+        if kind == 0:
+            new_pos = [pos[0], pos[1] - TILE_HEIGHT//2]
+        elif kind == 1:
+            new_pos = pos
+        else:
+            new_pos = [pos[0] + TILE_WIDTH//2, pos[1]]   
         for i in range(4): # X
             for j in range(4): # Y
                 if self.bm.blocks[kind][rot][j][i]:
-                    self.draw_tile((pos[0] + i*TILE_WIDTH, pos[1] + j*TILE_HEIGHT), kind+1, 0)
+                    self.draw_tile((new_pos[0] + i*TILE_WIDTH, new_pos[1] + j*TILE_HEIGHT), kind+1, 0)

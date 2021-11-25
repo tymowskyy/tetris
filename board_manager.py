@@ -12,6 +12,7 @@ class BoardManager:
         self.load_offsets()
         self.generate_queue()
         self.generate_block()
+        self.holded = 0
 
     def generate_board(self):
         self.board = [[0 for j in range(SIZE_X)] for i in range(SIZE_Y)]
@@ -115,3 +116,10 @@ class BoardManager:
                     self.update_projection()
                     return True
         return False
+
+    def hold(self):
+        tmp = self.holded
+        self.holded = self.block_kind+1
+        if tmp != 0:
+            self.queue.insert(0, tmp-1)
+        self.generate_block()

@@ -11,12 +11,10 @@ class Main:
         self.bm = board_manager.BoardManager()
         self.dm = display_manager.DisplayManager(self.win, self.bm)
         
+        self.init_values()
         self.main_loop()
 
-    def main_loop(self):
-        clock = pygame.time.Clock()
-        is_running = True
-
+    def init_values(self):
         self.space = False
         self.t_fstep = time()
         self.t_step = time()
@@ -27,6 +25,11 @@ class Main:
         self.up = False
         self.is_moving = False
         self.dir = -1
+        self.hold = False
+
+    def main_loop(self):
+        clock = pygame.time.Clock()
+        is_running = True
 
         while is_running:
             self.t = time()
@@ -83,8 +86,13 @@ class Main:
             self.space = True
             self.bm.move_down()
             self.place()
-        if not key_input[pygame.K_SPACE] and self.space:
+        elif not key_input[pygame.K_SPACE] and self.space:
             self.space = False
+
+        if key_input[pygame.K_c] and not self.hold:
+            self.hold = True
+            self.bm.hold()
+
         self.dm.draw_board()
 
     def move_down(self):
@@ -94,6 +102,7 @@ class Main:
             self.t_fall = self.t
 
     def place(self):
+        self.hold = False
         self.is_touching = False
         self.bm.save_block()
         self.bm.remove_full_lines()
