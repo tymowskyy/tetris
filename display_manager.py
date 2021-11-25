@@ -13,6 +13,7 @@ class DisplayManager:
         self.tiles = []
         for i in range(15):
             self.tiles.append(self.get_sprite(sprite_sheet, i))
+        self.background = pygame.image.load(BACKGROUND_PATH)
 
     def get_sprite(self, sheet, index):
         image = pygame.Surface((TILE_WIDTH, TILE_HEIGHT))
@@ -26,15 +27,22 @@ class DisplayManager:
             return self.tiles[index * 2 + 1]
 
     def draw_board(self):
+        self.win.blit(self.background, (0, 0))
         self.draw_tiles()
         self.draw_block(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_proj], self.bm.block_rot, 1)
         self.draw_block(self.bm.block_kind, self.bm.block_pos, self.bm.block_rot, 0)
+        if self.bm.queue[0] == 0:
+            self.draw_block_direct(self.bm.queue[0], [SELF_NEXT_OFFSET[0], SELF_NEXT_OFFSET[1] - TILE_HEIGHT//2], 0)
+        elif self.bm.queue[0] == 1:
+            self.draw_block_direct(self.bm.queue[0], SELF_NEXT_OFFSET, 0)
+        else:
+            self.draw_block_direct(self.bm.queue[0], [SELF_NEXT_OFFSET[0] + TILE_WIDTH//2, SELF_NEXT_OFFSET[1]], 0)
         pygame.display.flip()
 
     def draw_tiles(self):
         for i in range(SIZE_X):
             for j in range(SIZE_Y):
-                self.draw_tile((i*TILE_WIDTH, (SIZE_Y-j-1)*TILE_HEIGHT), self.bm.board[j][i], 0)
+                self.draw_tile((i*TILE_WIDTH + + BOARD_OFFSET[0], (SIZE_Y-j-1)*TILE_HEIGHT + + BOARD_OFFSET[1]), self.bm.board[j][i], 0)
     
     def draw_tile(self, pos, col, proj):
         if col==0:
@@ -46,4 +54,10 @@ class DisplayManager:
         for i in range(4): # X
             for j in range(4): # Y
                 if self.bm.blocks[kind][rot][j][i]:
-                    self.draw_tile(((pos[0] + i) * TILE_WIDTH, (SIZE_Y - pos[1] + j - 1) * TILE_WIDTH), kind+1, proj)
+                    self.draw_tile(((pos[0] + i) * TILE_WIDTH + BOARD_OFFSET[0], (SIZE_Y - pos[1] + j - 1) * TILE_HEIGHT + BOARD_OFFSET[1]), kind+1, proj)
+
+    def draw_block_direct(self, kind, pos, rot):
+        for i in range(4): # X
+            for j in range(4): # Y
+                if self.bm.blocks[kind][rot][j][i]:
+                    self.draw_tile((pos[0] + i*TILE_WIDTH, pos[1] + j*TILE_HEIGHT), kind+1, 0)
