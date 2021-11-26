@@ -7,6 +7,11 @@ class DisplayManager:
         self.win = win
         self.bm = bm
         self.load_sprites()
+        self.init_font()
+
+    def init_font(self):
+        pygame.font.init()
+        self.font = pygame.font.SysFont(FONT_FAMILY, FONT_SIZE, bold=True)
 
     def load_sprites(self):
         sprite_sheet = pygame.image.load(TILES_PATH)
@@ -34,6 +39,7 @@ class DisplayManager:
         self.draw_block_extra(self.bm.queue[0], SELF_NEXT_OFFSET, 0)
         if self.bm.holded != 0:
             self.draw_block_extra(self.bm.holded-1, SELF_HOLD_OFFSET, 0)
+        self.draw_text()
         pygame.display.flip()
 
     def draw_tiles(self):
@@ -64,3 +70,11 @@ class DisplayManager:
             for j in range(4): # Y
                 if self.bm.blocks[kind][rot][j][i]:
                     self.draw_tile((new_pos[0] + i*TILE_WIDTH, new_pos[1] + j*TILE_HEIGHT), kind+1, 0)
+    
+    def draw_text(self):
+        text_surface = self.font.render(str(self.bm.score), True, FONT_COLOR)
+        text_rect = text_surface.get_rect(center=(SCORE_OFFSET[0], SCORE_OFFSET[1]))
+        self.win.blit(text_surface, text_rect)
+        text_surface = self.font.render(str(self.bm.lines), True, FONT_COLOR)
+        text_rect = text_surface.get_rect(center=(LINES_OFFSET[0], LINES_OFFSET[1]))
+        self.win.blit(text_surface, text_rect)

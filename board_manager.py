@@ -1,5 +1,6 @@
 from os import terminal_size
 import pygame
+from pygame.draw import line
 from settings import *
 import csv
 import random
@@ -13,6 +14,8 @@ class BoardManager:
         self.generate_queue()
         self.generate_block()
         self.holded = 0
+        self.score = 0
+        self.lines = 0
 
     def generate_board(self):
         self.board = [[0 for j in range(SIZE_X)] for i in range(SIZE_Y)]
@@ -23,6 +26,9 @@ class BoardManager:
         for i in lines:
             self.board.pop(i)
             self.board.insert(SIZE_Y-1, [0 for i in range(SIZE_X)])
+        if len(lines) > 0:
+            self.score += LINES_SCORES[len(lines)-1]
+            self.lines += len(lines)
 
     def get_full_lines(self):
         to_remove = []
@@ -98,6 +104,7 @@ class BoardManager:
                 return
 
     def move_down(self):
+        self.score += (self.block_pos[1] - self.block_proj) * 2
         self.block_pos = [self.block_pos[0], self.block_proj]
 
     def rotate(self):

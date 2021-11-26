@@ -80,7 +80,8 @@ class Main:
             self.is_moving = False
 
         if key_input[pygame.K_DOWN] and self.t - self.t_down >= STEP_DELAY:
-            self.move_down()
+            if self.move_down():
+                self.bm.score+=1
 
         if key_input[pygame.K_SPACE] and not self.space:
             self.space = True
@@ -97,9 +98,11 @@ class Main:
 
     def move_down(self):
         self.t_down = self.t
-        if self.bm.move_block((0, -1)):
-            self.t_move = self.t
-            self.t_fall = self.t
+        if not self.bm.move_block((0, -1)):
+            return False
+        self.t_move = self.t
+        self.t_fall = self.t
+        return True
 
     def place(self):
         self.hold = False
