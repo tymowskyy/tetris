@@ -105,6 +105,12 @@ class Main:
         return True
 
     def place(self):
+        if self.bm.tspins>0:
+            if self.bm.tspins <= 3:
+                self.bm.score += TSPINS_SCORES[self.bm.tspins-1]
+            else:
+                self.bm.score += TSPINS_SCORES[2]
+            self.bm.tspins = 0
         self.hold = False
         self.is_touching = False
         self.bm.save_block()

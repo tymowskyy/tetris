@@ -16,6 +16,7 @@ class BoardManager:
         self.holded = 0
         self.score = 0
         self.lines = 0
+        self.tspins = 0
 
     def generate_board(self):
         self.board = [[0 for j in range(SIZE_X)] for i in range(SIZE_Y)]
@@ -87,6 +88,7 @@ class BoardManager:
         new_pos = (self.block_pos[0] + pos[0], self.block_pos[1] + pos[1])
         if self.is_possible(self.block_kind, new_pos, self.block_rot):
             self.block_pos = new_pos
+            self.tspins = 0
             return True
         return False
 
@@ -121,12 +123,30 @@ class BoardManager:
                     self.block_pos = new_pos
                     self.block_rot = new_rot
                     self.update_projection()
+                    if self.is_tspin():
+                        self.tspins += 1
+                    else:
+                        self.tspins = 0
+
                     return True
         return False
 
     def hold(self):
+        self.tspins = 0
         tmp = self.holded
         self.holded = self.block_kind+1
         if tmp != 0:
             self.queue.insert(0, tmp-1)
         self.generate_block()
+
+    def is_tspin(self):
+        if self.block_kind != 2:
+            return False
+        zeros = 0
+        for i in [0, 2]:
+            for j in [0, 2]:
+                new_pos = [self.block_pos[0]+i, self.block_pos[1]-j]
+                if new_pos[0] >= 0 and new_pos[0] < SIZE_X and new_pos[1] >= 0 and new_pos[1] < SIZE_Y:
+                    if self.board[new_pos[1]][new_pos[0]] == 0:
+                        zeros+=1
+        return zeros <= 1
