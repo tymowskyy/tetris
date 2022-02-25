@@ -118,10 +118,10 @@ class Main:
         self.bm.remove_full_lines()
         self.bm.generate_block()
         self.t_fall = self.t
-        if self.bm.level >= MIN_DELAY_LEVEL:
+        if self.bm.level > MIN_DELAY_LEVEL:
             self.fall_d = 0
         else:
-            self.fall_d = FALL_DELAY * (MIN_DELAY_LEVEL + 1 - self.bm.level) / MIN_DELAY_LEVEL
+            self.fall_d = FALL_DELAY * (MIN_DELAY_LEVEL - self.bm.level) / (MIN_DELAY_LEVEL-1)
          
 
 if __name__ == '__main__':
