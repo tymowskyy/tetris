@@ -39,7 +39,7 @@ class DisplayManager:
         self.draw_block_extra(self.bm.queue[0], SELF_NEXT_OFFSET, 0)
         if self.bm.holded != 0:
             self.draw_block_extra(self.bm.holded-1, SELF_HOLD_OFFSET, 0)
-        self.draw_text()
+        self.draw_texts()
         pygame.display.flip()
 
     def draw_tiles(self):
@@ -71,10 +71,12 @@ class DisplayManager:
                 if self.bm.blocks[kind][rot][j][i]:
                     self.draw_tile((new_pos[0] + i*TILE_WIDTH, new_pos[1] + j*TILE_HEIGHT), kind+1, 0)
     
-    def draw_text(self):
-        text_surface = self.font.render(str(self.bm.score), True, FONT_COLOR)
-        text_rect = text_surface.get_rect(center=(SCORE_OFFSET[0], SCORE_OFFSET[1]))
+    def draw_text(self, text, offset):
+        text_surface = self.font.render(str(text), True, FONT_COLOR)
+        text_rect = text_surface.get_rect(center=(offset[0], offset[1]))
         self.win.blit(text_surface, text_rect)
-        text_surface = self.font.render(str(self.bm.lines), True, FONT_COLOR)
-        text_rect = text_surface.get_rect(center=(LINES_OFFSET[0], LINES_OFFSET[1]))
-        self.win.blit(text_surface, text_rect)
+
+    def draw_texts(self):
+        self.draw_text(str(self.bm.score), SCORE_OFFSET)
+        self.draw_text(str(self.bm.level), LEVEL_OFFSET)
+        self.draw_text(str(self.bm.lines), LINES_OFFSET)

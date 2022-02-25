@@ -1,6 +1,3 @@
-from os import terminal_size
-import pygame
-from pygame.draw import line
 from settings import *
 import csv
 import random
@@ -17,6 +14,7 @@ class BoardManager:
         self.score = 0
         self.lines = 0
         self.tspins = 0
+        self.level = 1
 
     def generate_board(self):
         self.board = [[0 for j in range(SIZE_X)] for i in range(SIZE_Y)]
@@ -28,7 +26,9 @@ class BoardManager:
             self.board.pop(i)
             self.board.insert(SIZE_Y-1, [0 for i in range(SIZE_X)])
         if len(lines) > 0:
-            self.score += LINES_SCORES[len(lines)-1]
+            self.score += LINE_SCORES[len(lines)-1] * self.level
+            if self.lines//LINES_TO_NEXT_LEVEL != (self.lines + len(lines))//LINES_TO_NEXT_LEVEL:
+                self.level+=1
             self.lines += len(lines)
 
     def get_full_lines(self):

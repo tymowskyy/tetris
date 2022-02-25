@@ -26,6 +26,7 @@ class Main:
         self.is_moving = False
         self.dir = -1
         self.hold = False
+        self.fall_d = FALL_DELAY
 
     def main_loop(self):
         clock = pygame.time.Clock()
@@ -45,7 +46,7 @@ class Main:
             else:
                 self.t_touching = self.t
             
-            if self.t - self.t_fall >= FALL_DELAY:
+            if self.t - self.t_fall >= self.fall_d:
                 self.move_down()
 
         pygame.quit()
@@ -107,9 +108,9 @@ class Main:
     def place(self):
         if self.bm.tspins>0:
             if self.bm.tspins <= 3:
-                self.bm.score += TSPINS_SCORES[self.bm.tspins-1]
+                self.bm.score += TSPINS_SCORE[self.bm.tspins-1]
             else:
-                self.bm.score += TSPINS_SCORES[2]
+                self.bm.score += TSPINS_SCORE[2]
             self.bm.tspins = 0
         self.hold = False
         self.is_touching = False
@@ -117,6 +118,11 @@ class Main:
         self.bm.remove_full_lines()
         self.bm.generate_block()
         self.t_fall = self.t
+        if self.bm.level >= MIN_DELAY_LEVEL:
+            self.fall_d = 0
+        else:
+            self.fall_d = FALL_DELAY * (MIN_DELAY_LEVEL + 1 - self.bm.level) / MIN_DELAY_LEVEL
+         
 
 if __name__ == '__main__':
     Main()
