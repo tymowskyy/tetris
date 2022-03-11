@@ -27,6 +27,9 @@ class Main:
         self.dir = -1
         self.hold = False
         self.fall_d = FALL_DELAY
+        self.pause = False
+        self.t_pause = time()
+        self.last_hover = 0
 
     def main_loop(self):
         clock = pygame.time.Clock()
@@ -38,16 +41,40 @@ class Main:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     is_running = False
-            self.keyboard(pygame.key.get_pressed())
-            self.is_touching = not self.bm.is_possible(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_pos[1]-1], self.bm.block_rot)
-            if self.is_touching:
-                if self.t - self.t_touching >= TOUCHING_DELAY or self.t - self.t_move >= IMMOBILITY_DELAY:
-                    self.place()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.on_pause()
+                if event.type == pygame.MOUSEBUTTONUP:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if event.button == 1 and self.pause:
+                        mouse_pos = pygame.mouse.get_pos()
+                        hover = self.get_hover(mouse_pos)
+                        if hover == 1:
+                            self.on_pause()
+                        elif hover == 2:
+                            self.bm = board_manager.BoardManager()
+                            self.dm.bm = self.bm
+                            self.init_values()
+
+            if self.pause:
+                mouse_pos = pygame.mouse.get_pos()
+                hover = self.get_hover(mouse_pos)
+                if hover != self.last_hover:
+                    self.dm.draw_pause(hover)
+                    self.last_hover = hover
             else:
-                self.t_touching = self.t
-            
-            if self.t - self.t_fall >= self.fall_d:
-                self.move_down()
+                self.keyboard(pygame.key.get_pressed())
+                self.dm.draw_board()
+                pygame.display.flip()
+                self.is_touching = not self.bm.is_possible(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_pos[1]-1], self.bm.block_rot)
+                if self.is_touching:
+                    if self.t - self.t_touching >= TOUCHING_DELAY or self.t - self.t_move >= IMMOBILITY_DELAY:
+                        self.place()
+                else:
+                    self.t_touching = self.t
+                
+                if self.t - self.t_fall >= self.fall_d:
+                    self.move_down()
 
         pygame.quit()
 
@@ -95,8 +122,6 @@ class Main:
             self.hold = True
             self.bm.hold()
 
-        self.dm.draw_board()
-
     def move_down(self):
         self.t_down = self.t
         if not self.bm.move_block((0, -1)):
@@ -122,7 +147,32 @@ class Main:
             self.fall_d = 0
         else:
             self.fall_d = FALL_DELAY * (MIN_DELAY_LEVEL - self.bm.level) / (MIN_DELAY_LEVEL-1)
-         
+
+    def on_pause(self):
+        if self.pause:
+            self.pause = False
+            dt = time() - self.t_pause
+            self.t_fstep += dt
+            self.t_step += dt
+            self.t_down += dt
+            self.t_touching += dt
+            self.t_move += dt
+            self.t_fall += dt
+        else:
+            self.pause = True
+            self.t_pause = time()
+            mouse_pos = pygame.mouse.get_pos()
+            hover = self.get_hover(mouse_pos)
+            self.dm.draw_pause(hover)
+
+    def get_hover(self, pos):
+        if (pos[0] > RESUME_OFFSET[0] and pos[0] < RESUME_OFFSET[0] + BUTTONS_SIZE[0]) and (
+            pos[1] > RESUME_OFFSET[1] and pos[1] < RESUME_OFFSET[1] + BUTTONS_SIZE[1]):
+            return 1
+        if (pos[0] > PLAY_AGAIN_OFFSET[0] and pos[0] < PLAY_AGAIN_OFFSET[0] + BUTTONS_SIZE[0]) and (
+            pos[1] > PLAY_AGAIN_OFFSET[1] and pos[1] < PLAY_AGAIN_OFFSET[1] + BUTTONS_SIZE[1]):
+            return 2
+        return 0
 
 if __name__ == '__main__':
     Main()

@@ -18,10 +18,17 @@ class DisplayManager:
         self.tiles = []
         for i in range(15):
             self.tiles.append(self.get_sprite(sprite_sheet, i))
+     
+        sprite_sheet = pygame.image.load(BUTTONS_PATH)
+        self.buttons = []
+        for i in range(4):
+            self.buttons.append(self.get_sprite(sprite_sheet, i))
+            self.buttons[i] = pygame.transform.scale(self.buttons[i], BUTTONS_SIZE)
+
         self.background = pygame.image.load(BACKGROUND_PATH)
 
     def get_sprite(self, sheet, index):
-        image = pygame.Surface((TILE_WIDTH, TILE_HEIGHT))
+        image = pygame.Surface((TILE_WIDTH, TILE_HEIGHT), pygame.SRCALPHA)
         image.blit(sheet, (0, 0), (index * TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT))
         return image
 
@@ -40,7 +47,6 @@ class DisplayManager:
         if self.bm.holded != 0:
             self.draw_block_extra(self.bm.holded-1, SELF_HOLD_OFFSET, 0)
         self.draw_texts()
-        pygame.display.flip()
 
     def draw_tiles(self):
         for i in range(SIZE_X):
@@ -80,3 +86,21 @@ class DisplayManager:
         self.draw_text(str(self.bm.score), SCORE_OFFSET)
         self.draw_text(str(self.bm.level), LEVEL_OFFSET)
         self.draw_text(str(self.bm.lines), LINES_OFFSET)
+
+    def draw_pause(self, hover):
+        self.draw_board()
+        surface = pygame.Surface((WIDTH, HEIGHT))
+        surface.set_alpha(MENU_APLHA)
+        surface.fill(MENU_COLOR)
+
+        b1 = self.buttons[0]
+        b2 = self.buttons[2]
+        if hover == 1:
+            b1 = self.buttons[1]
+        elif hover == 2:
+            b2 = self.buttons[3]
+
+        self.win.blit(surface, (0, 0))
+        self.win.blit(b1, RESUME_OFFSET)
+        self.win.blit(b2, PLAY_AGAIN_OFFSET)
+        pygame.display.flip()
