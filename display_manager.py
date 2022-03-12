@@ -62,7 +62,7 @@ class DisplayManager:
     def draw_block(self, kind, pos, rot, proj):
         for i in range(4): # X
             for j in range(4): # Y
-                if self.bm.blocks[kind][rot][j][i]:
+                if self.bm.blocks[kind][rot][j][i] and pos[1] - j < SIZE_Y:
                     self.draw_tile(((pos[0] + i) * TILE_WIDTH + BOARD_OFFSET[0], (SIZE_Y - pos[1] + j - 1) * TILE_HEIGHT + BOARD_OFFSET[1]), kind+1, proj)
 
     def draw_block_extra(self, kind, pos, rot):

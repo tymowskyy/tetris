@@ -30,6 +30,7 @@ class Main:
         self.pause = False
         self.t_pause = time()
         self.last_hover = 0
+        self.end_game = False
 
     def main_loop(self):
         clock = pygame.time.Clock()
@@ -42,7 +43,7 @@ class Main:
                 if event.type == pygame.QUIT:
                     is_running = False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_ESCAPE and not self.end_game:
                         self.on_pause()
                 if event.type == pygame.MOUSEBUTTONUP:
                     mouse_pos = pygame.mouse.get_pos()
@@ -55,7 +56,9 @@ class Main:
                             self.bm = board_manager.BoardManager()
                             self.dm.bm = self.bm
                             self.init_values()
-
+                            
+            if self.end_game:
+                continue
             if self.pause:
                 mouse_pos = pygame.mouse.get_pos()
                 hover = self.get_hover(mouse_pos)
@@ -139,7 +142,12 @@ class Main:
             self.bm.tspins = 0
         self.hold = False
         self.is_touching = False
-        self.bm.save_block()
+        end = self.bm.save_block()
+
+        if end:
+            self.end_game = True
+            return
+
         self.bm.remove_full_lines()
         self.bm.generate_block()
         self.t_fall = self.t
@@ -147,6 +155,13 @@ class Main:
             self.fall_d = 0
         else:
             self.fall_d = FALL_DELAY * (MIN_DELAY_LEVEL - self.bm.level) / (MIN_DELAY_LEVEL-1)
+
+        self.t_fstep = time()
+        self.t_step = time()
+        self.t_down = time()
+        self.t_touching = time()
+        self.t_move = time()
+        self.t_fall = time()
 
     def on_pause(self):
         if self.pause:

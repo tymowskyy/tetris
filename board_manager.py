@@ -67,6 +67,8 @@ class BoardManager:
         self.block_pos = STARTING_POS
         self.block_kind = self.queue[0]
         self.block_rot = 0
+        while not self.is_possible(self.block_kind, self.block_pos, self.block_rot):
+            self.block_pos = (self.block_pos[0], self.block_pos[1] + 1)
         self.queue.pop(0)
         if len(self.queue) == 0:
             self.generate_queue()
@@ -97,8 +99,10 @@ class BoardManager:
             for j in range(4):
                 if not self.blocks[self.block_kind][self.block_rot][j][i]:
                     continue
+                if self.block_pos[1] - j >= SIZE_Y:
+                    return True
                 self.board[self.block_pos[1] - j][self.block_pos[0] + i] = self.block_kind+1
-    
+        return False
     def update_projection(self):
         for i in range(self.block_pos[1], -1, -1):
             if not self.is_possible(self.block_kind, [self.block_pos[0], i], self.block_rot):
