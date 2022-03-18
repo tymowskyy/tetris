@@ -104,3 +104,16 @@ class DisplayManager:
         self.win.blit(b1, RESUME_OFFSET)
         self.win.blit(b2, PLAY_AGAIN_OFFSET)
         pygame.display.flip()
+    
+    def draw_end_screen(self, name):
+        self.draw_board()
+        surface = pygame.Surface((WIDTH, HEIGHT))
+        surface.set_alpha(MENU_APLHA)
+        surface.fill(MENU_COLOR)
+
+        b = self.buttons[2]
+
+        self.win.blit(surface, (0, 0))
+        self.win.blit(b, RESUME_OFFSET)
+        self.draw_text(name, (100, 100))
+        pygame.display.flip()

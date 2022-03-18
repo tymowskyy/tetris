@@ -31,6 +31,7 @@ class Main:
         self.t_pause = time()
         self.last_hover = 0
         self.end_game = False
+        self.name = ''
 
     def main_loop(self):
         clock = pygame.time.Clock()
@@ -43,7 +44,9 @@ class Main:
                 if event.type == pygame.QUIT:
                     is_running = False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE and not self.end_game:
+                    if self.end_game:
+                        self.enter_name(event)
+                    elif event.key == pygame.K_ESCAPE:
                         self.on_pause()
                 if event.type == pygame.MOUSEBUTTONUP:
                     mouse_pos = pygame.mouse.get_pos()
@@ -57,27 +60,27 @@ class Main:
                             self.dm.bm = self.bm
                             self.init_values()
                             
-            if self.end_game:
-                continue
             if self.pause:
                 mouse_pos = pygame.mouse.get_pos()
                 hover = self.get_hover(mouse_pos)
                 if hover != self.last_hover:
                     self.dm.draw_pause(hover)
                     self.last_hover = hover
-            else:
+
+            elif not self.end_game:
                 self.keyboard(pygame.key.get_pressed())
-                self.dm.draw_board()
-                pygame.display.flip()
-                self.is_touching = not self.bm.is_possible(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_pos[1]-1], self.bm.block_rot)
-                if self.is_touching:
-                    if self.t - self.t_touching >= TOUCHING_DELAY or self.t - self.t_move >= IMMOBILITY_DELAY:
-                        self.place()
-                else:
-                    self.t_touching = self.t
-                
-                if self.t - self.t_fall >= self.fall_d:
-                    self.move_down()
+                if not self.end_game:
+                    self.dm.draw_board()
+                    pygame.display.flip()
+                    self.is_touching = not self.bm.is_possible(self.bm.block_kind, [self.bm.block_pos[0], self.bm.block_pos[1]-1], self.bm.block_rot)
+                    if self.is_touching:
+                        if self.t - self.t_touching >= TOUCHING_DELAY or self.t - self.t_move >= IMMOBILITY_DELAY:
+                            self.place()
+                    else:
+                        self.t_touching = self.t
+                    
+                    if self.t - self.t_fall >= self.fall_d:
+                        self.move_down()
 
         pygame.quit()
 
@@ -146,6 +149,7 @@ class Main:
 
         if end:
             self.end_game = True
+            self.dm.draw_end_screen(self.name)
             return
 
         self.bm.remove_full_lines()
@@ -188,6 +192,14 @@ class Main:
             pos[1] > PLAY_AGAIN_OFFSET[1] and pos[1] < PLAY_AGAIN_OFFSET[1] + BUTTONS_SIZE[1]):
             return 2
         return 0
+
+    def enter_name(self, event):
+        if event.key == pygame.K_BACKSPACE and len(self.name):
+            self.name = self.name[:-1]
+        elif event.unicode in ALLOW_LIST:
+            self.name += event.unicode
+        
+        self.dm.draw_end_screen(self.name)
 
 if __name__ == '__main__':
     Main()
