@@ -104,6 +104,7 @@ class BoardManager:
                     return True
                 self.board[self.block_pos[1] - j][self.block_pos[0] + i] = self.block_kind+1
         return False
+        
     def update_projection(self):
         for i in range(self.block_pos[1], -1, -1):
             if not self.is_possible(self.block_kind, [self.block_pos[0], i], self.block_rot):

@@ -7,11 +7,12 @@ class DisplayManager:
         self.win = win
         self.bm = bm
         self.load_sprites()
-        self.init_font()
+        self.init_fonts()
 
-    def init_font(self):
+    def init_fonts(self):
         pygame.font.init()
-        self.font = pygame.font.SysFont(FONT_FAMILY, FONT_SIZE, bold=True)
+        self.font1 = pygame.font.SysFont(FONT_FAMILY, FONT_SIZE, bold=True)
+        self.font2 = pygame.font.SysFont(FONT_FAMILY, HIGH_SCORES_FONT_SIZE, bold=True)
 
     def load_sprites(self):
         sprite_sheet = pygame.image.load(TILES_PATH)
@@ -47,6 +48,7 @@ class DisplayManager:
         if self.bm.holded != 0:
             self.draw_block_extra(self.bm.holded-1, SELF_HOLD_OFFSET, 0)
         self.draw_texts()
+        self.draw_high_scores()
 
     def draw_tiles(self):
         for i in range(SIZE_X):
@@ -77,15 +79,15 @@ class DisplayManager:
                 if self.bm.blocks[kind][rot][j][i]:
                     self.draw_tile((new_pos[0] + i*TILE_WIDTH, new_pos[1] + j*TILE_HEIGHT), kind+1, 0)
     
-    def draw_text(self, text, offset):
-        text_surface = self.font.render(str(text), True, FONT_COLOR)
+    def draw_text(self, text, offset, font):
+        text_surface = font.render(str(text), True, FONT_COLOR)
         text_rect = text_surface.get_rect(center=(offset[0], offset[1]))
         self.win.blit(text_surface, text_rect)
 
     def draw_texts(self):
-        self.draw_text(str(self.bm.score), SCORE_OFFSET)
-        self.draw_text(str(self.bm.level), LEVEL_OFFSET)
-        self.draw_text(str(self.bm.lines), LINES_OFFSET)
+        self.draw_text(str(self.bm.score), SCORE_OFFSET, self.font1)
+        self.draw_text(str(self.bm.level), LEVEL_OFFSET, self.font1)
+        self.draw_text(str(self.bm.lines), LINES_OFFSET, self.font1)
 
     def draw_pause(self, hover):
         self.draw_board()
@@ -117,6 +119,13 @@ class DisplayManager:
 
         self.win.blit(surface, (0, 0))
         self.win.blit(b, PLAY_AGAIN_END_OFFSET)
-        self.draw_text(name, END_SCREEN_NAME_OFFSET)
-        self.draw_text('GAME OVER! ENTER YOUR NAME:', END_SCREEN_TEXT_OFFSET)
+        self.draw_text(name, END_SCREEN_NAME_OFFSET, self.font1)
+        self.draw_text('GAME OVER! ENTER YOUR NAME:', END_SCREEN_TEXT_OFFSET, self.font1)
         pygame.display.flip()
+    
+    def draw_high_scores(self):
+        for i, score in enumerate(self.bm.high_scores):
+            self.draw_text(score[0] + ':', (HIGH_SCORES_OFFSET[0],
+                HIGH_SCORES_OFFSET[1] + i*2*LINE_HEIGHT), self.font2)
+            self.draw_text(score[1], (HIGH_SCORES_OFFSET[0],
+                HIGH_SCORES_OFFSET[1] + (i*2+1)*LINE_HEIGHT), self.font2)
