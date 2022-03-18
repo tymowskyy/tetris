@@ -105,15 +105,18 @@ class DisplayManager:
         self.win.blit(b2, PLAY_AGAIN_OFFSET)
         pygame.display.flip()
     
-    def draw_end_screen(self, name):
+    def draw_end_screen(self, name, hover):
         self.draw_board()
         surface = pygame.Surface((WIDTH, HEIGHT))
         surface.set_alpha(MENU_APLHA)
         surface.fill(MENU_COLOR)
 
         b = self.buttons[2]
+        if hover:
+            b = self.buttons[3]
 
         self.win.blit(surface, (0, 0))
-        self.win.blit(b, RESUME_OFFSET)
-        self.draw_text(name, (100, 100))
+        self.win.blit(b, PLAY_AGAIN_END_OFFSET)
+        self.draw_text(name, END_SCREEN_NAME_OFFSET)
+        self.draw_text('GAME OVER! ENTER YOUR NAME:', END_SCREEN_TEXT_OFFSET)
         pygame.display.flip()

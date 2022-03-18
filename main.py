@@ -10,7 +10,8 @@ class Main:
         self.win = pygame.display.set_mode((WIDTH, HEIGHT))
         self.bm = board_manager.BoardManager()
         self.dm = display_manager.DisplayManager(self.win, self.bm)
-        
+        self.name = ''
+
         self.init_values()
         self.main_loop()
 
@@ -31,7 +32,6 @@ class Main:
         self.t_pause = time()
         self.last_hover = 0
         self.end_game = False
-        self.name = ''
 
     def main_loop(self):
         clock = pygame.time.Clock()
@@ -50,24 +50,35 @@ class Main:
                         self.on_pause()
                 if event.type == pygame.MOUSEBUTTONUP:
                     mouse_pos = pygame.mouse.get_pos()
-                    if event.button == 1 and self.pause:
-                        mouse_pos = pygame.mouse.get_pos()
-                        hover = self.get_hover(mouse_pos)
-                        if hover == 1:
-                            self.on_pause()
-                        elif hover == 2:
-                            self.bm = board_manager.BoardManager()
-                            self.dm.bm = self.bm
-                            self.init_values()
-                            
-            if self.pause:
+                    if event.button == 1:
+                        if self.pause:
+                            hover = self.get_hover(mouse_pos)
+                            if hover == 1:
+                                self.on_pause()
+                            elif hover == 2:
+                                self.bm = board_manager.BoardManager()
+                                self.dm.bm = self.bm
+                                self.init_values()
+                        elif self.end_game:
+                            self.update_hover_end(pygame.mouse.get_pos())
+                            if self.last_hover:
+                                self.bm.update_high_scores(self.name)
+                                self.bm = board_manager.BoardManager()
+                                self.dm.bm = self.bm
+                                self.init_values()
+
+            if self.end_game:
+                if self.update_hover_end(pygame.mouse.get_pos()):
+                    self.dm.draw_end_screen(self.name, self.last_hover)
+            
+            elif self.pause:
                 mouse_pos = pygame.mouse.get_pos()
                 hover = self.get_hover(mouse_pos)
                 if hover != self.last_hover:
                     self.dm.draw_pause(hover)
                     self.last_hover = hover
 
-            elif not self.end_game:
+            else:
                 self.keyboard(pygame.key.get_pressed())
                 if not self.end_game:
                     self.dm.draw_board()
@@ -149,7 +160,7 @@ class Main:
 
         if end:
             self.end_game = True
-            self.dm.draw_end_screen(self.name)
+            self.dm.draw_end_screen(self.name, 0)
             return
 
         self.bm.remove_full_lines()
@@ -196,10 +207,19 @@ class Main:
     def enter_name(self, event):
         if event.key == pygame.K_BACKSPACE and len(self.name):
             self.name = self.name[:-1]
-        elif event.unicode in ALLOW_LIST:
-            self.name += event.unicode
+            self.dm.draw_end_screen(self.name, self.last_hover)
+        elif event.unicode in ALLOW_LIST and len(self.name) < MAX_NAME_LENGHT:
+            self.name += event.unicode  
+            self.dm.draw_end_screen(self.name, self.last_hover)
+
+    def update_hover_end(self, pos):
+        hover = (pos[0] > PLAY_AGAIN_END_OFFSET[0] and pos[0] < PLAY_AGAIN_END_OFFSET[0] + BUTTONS_SIZE[0]) and (
+            pos[1] > PLAY_AGAIN_END_OFFSET[1] and pos[1] < PLAY_AGAIN_END_OFFSET[1] + BUTTONS_SIZE[1])
+        if hover != self.last_hover:
+            self.last_hover = hover
+            return 1
+        return 0
         
-        self.dm.draw_end_screen(self.name)
 
 if __name__ == '__main__':
     Main()

@@ -8,6 +8,7 @@ class BoardManager:
         self.generate_board()
         self.load_blocks()
         self.load_offsets()
+        self.load_high_scores()
         self.generate_queue()
         self.generate_block()
         self.holded = 0
@@ -154,3 +155,30 @@ class BoardManager:
                     if self.board[new_pos[1]][new_pos[0]] == 0:
                         zeros+=1
         return zeros <= 1
+
+    def load_high_scores(self):
+        try:
+            with open(HIGH_SCORES_PATH, 'r') as csv_file:
+                self.high_scores = list(map(lambda row: (row[0], int(row[1])), csv.reader(csv_file)))
+        except:
+            self.high_scores = HIGH_SCORES_DEFAULT
+            self.save_high_scores()
+
+    def update_high_scores(self, name):
+        if self.score <= self.high_scores[-1][1]:
+            return
+
+        i = 3
+        while i >= 0:
+            if self.score <= self.high_scores[i][1]:
+                break
+            i -= 1
+
+        self.high_scores.insert(i+1, (name, self.score))
+        self.high_scores.pop()
+        self.save_high_scores()
+
+    def save_high_scores(self):
+        with open(HIGH_SCORES_PATH, 'w') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerows(self.high_scores)
