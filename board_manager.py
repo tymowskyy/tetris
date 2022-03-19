@@ -180,6 +180,6 @@ class BoardManager:
         self.save_high_scores()
 
     def save_high_scores(self):
-        with open(HIGH_SCORES_PATH, 'w') as csvfile:
+        with open(HIGH_SCORES_PATH, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows(self.high_scores)

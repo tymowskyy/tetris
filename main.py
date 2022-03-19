@@ -62,9 +62,10 @@ class Main:
                         elif self.end_game:
                             self.update_hover_end(pygame.mouse.get_pos())
                             if self.last_hover:
-                                if not self.name:
-                                    self.name = '---'
-                                self.bm.update_high_scores(self.name)
+                                if self.name:
+                                    self.bm.update_high_scores(self.name)
+                                else:
+                                    self.bm.update_high_scores('---')
                                 self.bm = board_manager.BoardManager()
                                 self.dm.bm = self.bm
                                 self.init_values()
