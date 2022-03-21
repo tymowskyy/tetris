@@ -8,6 +8,9 @@ class Main:
     def __init__(self):
         pygame.init()
         self.win = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption("Tetris")
+        pygame.display.set_icon(pygame.image.load(ICON_PATH))
+
         self.bm = board_manager.BoardManager()
         self.dm = display_manager.DisplayManager(self.win, self.bm)
         self.name = ''

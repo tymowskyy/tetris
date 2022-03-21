@@ -45,3 +45,4 @@ HIGH_SCORES_DEFAULT = [('---', 5000), ('---', 4000), ('---', 3000), ('---', 2000
 LINE_HEIGHT = 32
 HIGH_SCORES_OFFSET = (608, 426)
 HIGH_SCORES_FONT_SIZE = 20
+ICON_PATH = 'Sprites/icon.png'
