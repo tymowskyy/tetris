@@ -31,12 +31,14 @@ Pygame project, implementation of Tetris
 * Hold
 * Next block preview
 ## Screenshots
-<img src="screenshots/1.png" width="40%">
-<img src="screenshots/2.png" width="40%">
-<img src="screenshots/3.png" width="40%">
-<img src="screenshots/4.png" width="40%">
+<p>
+   <img src="screenshots/1.png" width="40%">
+   <img src="screenshots/2.png" width="40%">
+</p>
+<p>
+   <img src="screenshots/3.png" width="40%">
+   <img src="screenshots/4.png" width="40%">
+</p>
 
 ## Author
 Tymoteusz Stępkowski - [tymowskyy](https://github.com/tymowskyy)
-## Linense
-All rights reserved
